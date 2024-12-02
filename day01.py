@@ -42,7 +42,7 @@ def main():
     print('Part 1 solution:', part1(input_file='inputs/day01/input.txt'))
 
     assert part2(input_file="inputs/day01/test.txt") == 31
-    print('Part 1 solution:', part2(input_file='inputs/day01/input.txt'))
+    print('Part 2 solution:', part2(input_file='inputs/day01/input.txt'))
 
 
 if __name__ == '__main__':
