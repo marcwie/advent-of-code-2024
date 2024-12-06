@@ -39,33 +39,20 @@ def is_loop(obstacles, x, y, direction, n_rows, n_cols):
     return 0
 
 
-def solve_part2(input_file):
+def part2(obstacles, x, y, direction, n_cols, n_rows):
 
-    data = load(input_file)
-    obstacles, x, y, direction = setup(data)
-
-    n_rows = len(data)
-    n_cols = len(data[0])
     result = 0
 
     for i in range(n_rows):
         for j in range(n_cols):
-            if (i, j) in obstacles:
-                continue
-
-            adapted_obstacles = obstacles | set([(i, j)])
-            result += is_loop(adapted_obstacles, x, y, direction, n_rows, n_cols)
+            if (i, j) not in obstacles:
+                adapted_obstacles = obstacles | set([(i, j)])
+                result += is_loop(adapted_obstacles, x, y, direction, n_rows, n_cols)
 
     return result
 
 
-def solve_part1(input_file):
-
-    data = load(input_file)
-    obstacles, x, y, direction = setup(data)
-
-    n_rows = len(data)
-    n_cols = len(data[0])
+def part1(obstacles, x, y, direction, n_cols, n_rows):
 
     visited = set()
 
@@ -80,15 +67,26 @@ def solve_part1(input_file):
     return len(visited)
 
 
+def solve(input_file, solve_func):
+
+    data = load(input_file)
+    obstacles, x, y, direction = setup(data)
+
+    n_rows = len(data)
+    n_cols = len(data[0])
+
+    return solve_func(obstacles, x, y, direction, n_cols, n_rows)
+
+
 def main():
 
-    assert solve_part1(input_file="inputs/day06/test.txt") == 41
-    solution = solve_part1(input_file="inputs/day06/input.txt")
+    assert solve("inputs/day06/test.txt", part1) == 41
+    solution = solve("inputs/day06/input.txt", part1)
     print("Part 1 solution:", solution)
     assert solution == 4964
 
-    assert solve_part2(input_file="inputs/day06/test.txt") == 6
-    solution = solve_part2(input_file="inputs/day06/input.txt")
+    assert solve("inputs/day06/test.txt", part2) == 6
+    solution = solve("inputs/day06/input.txt", part2)
     print("Part 2 solution:", solution)
     assert solution == 1740
 
