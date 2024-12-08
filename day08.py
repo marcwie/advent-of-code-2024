@@ -23,7 +23,7 @@ def find_antinodes(positions, n_rows, n_cols):
     antinodes = set()
 
     for i, (xi, yi) in enumerate(positions):
-        for j, (xj, yj) in enumerate(positions[i + 1 :]):
+        for xj, yj in positions[i + 1 :]:
             dx, dy = xj - xi, yj - yi
 
             if 0 <= xj + dx < n_rows and 0 <= yj + dy < n_cols:
@@ -39,7 +39,7 @@ def find_diagonal(positions, n_rows, n_cols):
     antinodes = set()
 
     for i, (xi, yi) in enumerate(positions):
-        for j, (xj, yj) in enumerate(positions[i + 1 :]):
+        for xj, yj in positions[i + 1 :]:
             dx, dy = xj - xi, yj - yi
 
             x, y = xj, yj
