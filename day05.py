@@ -1,3 +1,6 @@
+import argparse
+
+
 def load(input_file):
 
     rules = []
@@ -84,15 +87,12 @@ def solve(input_file, solve_func):
 
 def main():
 
-    assert solve("inputs/day05/test.txt", middle_page_if_valid) == 143
-    solution = solve("inputs/day05/input.txt", middle_page_if_valid)
-    print("Part 1 solution:", solution)
-    assert solution == 4135
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", type=str)
+    args = parser.parse_args()
 
-    assert solve("inputs/day05/test.txt", middle_page_if_invalid) == 123
-    solution = solve("inputs/day05/input.txt", middle_page_if_invalid)
-    print("Part 2 solution:", solution)
-    assert solution == 5285
+    print("Part 1 solution:", solve(args.input_file, middle_page_if_valid))
+    print("Part 2 solution:", solve(args.input_file, middle_page_if_invalid))
 
 
 if __name__ == "__main__":

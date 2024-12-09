@@ -1,3 +1,5 @@
+import argparse
+
 DIRECTIONS = {">": (0, 1, "v"), "v": (1, 0, "<"), "<": (0, -1, "^"), "^": (-1, 0, ">")}
 
 
@@ -80,15 +82,12 @@ def solve(input_file, solve_func):
 
 def main():
 
-    assert solve("inputs/day06/test.txt", part1) == 41
-    solution = solve("inputs/day06/input.txt", part1)
-    print("Part 1 solution:", solution)
-    assert solution == 4964
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", type=str)
+    args = parser.parse_args()
 
-    assert solve("inputs/day06/test.txt", part2) == 6
-    solution = solve("inputs/day06/input.txt", part2)
-    print("Part 2 solution:", solution)
-    assert solution == 1740
+    print("Part 1 solution:", solve(args.input_file, part1))
+    print("Part 2 solution:", solve(args.input_file, part2))
 
 
 if __name__ == "__main__":

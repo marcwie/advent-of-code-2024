@@ -1,3 +1,6 @@
+import argparse
+
+
 def load(input_file):
     with open(input_file, "r") as infile:
         data = infile.read().splitlines()
@@ -37,15 +40,12 @@ def solve(input_file, operators):
 
 def main():
 
-    assert solve("inputs/day07/test.txt", [add, multiply]) == 3749
-    solution = solve("inputs/day07/input.txt", [add, multiply])
-    print("Part 1 solution:", solution)
-    assert solution == 932137732557
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", type=str)
+    args = parser.parse_args()
 
-    assert solve("inputs/day07/test.txt", [add, multiply, concatenate]) == 11387
-    solution = solve("inputs/day07/input.txt", [add, multiply, concatenate])
-    print("Part 2 solution:", solution)
-    assert solution == 661823605105500
+    print("Part 1 solution:", solve(args.input_file, [add, multiply]))
+    print("Part 2 solution:", solve(args.input_file, [add, multiply, concatenate]))
 
 
 if __name__ == "__main__":

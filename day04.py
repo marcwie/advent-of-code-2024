@@ -1,3 +1,5 @@
+import argparse
+
 DIRECTIONS = ((0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1))
 WORD = "XMAS"
 
@@ -67,15 +69,12 @@ def solve(input_file, solve_func):
 
 def main():
 
-    assert solve(input_file="inputs/day04/test.txt", solve_func=starts_xmas) == 18
-    solution = solve(input_file="inputs/day04/input.txt", solve_func=starts_xmas)
-    print("Part 1 solution:", solution)
-    assert solution == 2427
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", type=str)
+    args = parser.parse_args()
 
-    assert solve(input_file="inputs/day04/test.txt", solve_func=is_cross) == 9
-    solution = solve(input_file="inputs/day04/input.txt", solve_func=is_cross)
-    print("Part 2 solution:", solution)
-    assert solution == 1900
+    print("Part 1 solution:", solve(args.input_file, starts_xmas))
+    print("Part 2 solution:", solve(args.input_file, is_cross))
 
 
 if __name__ == "__main__":

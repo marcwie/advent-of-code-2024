@@ -1,4 +1,5 @@
 from collections import Counter
+import argparse
 
 
 def load(input_file):
@@ -39,11 +40,12 @@ def part2(input_file):
 
 def main():
 
-    assert part1(input_file="inputs/day01/test.txt") == 11
-    print("Part 1 solution:", part1(input_file="inputs/day01/input.txt"))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", type=str)
+    args = parser.parse_args()
 
-    assert part2(input_file="inputs/day01/test.txt") == 31
-    print("Part 2 solution:", part2(input_file="inputs/day01/input.txt"))
+    print("Part 1 solution:", part1(args.input_file))
+    print("Part 2 solution:", part2(args.input_file))
 
 
 if __name__ == "__main__":

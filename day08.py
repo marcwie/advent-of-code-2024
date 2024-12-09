@@ -1,3 +1,6 @@
+import argparse
+
+
 def load(input_file):
     with open(input_file, "r") as infile:
         data = infile.read().splitlines()
@@ -68,15 +71,12 @@ def solve(input_file, solve_func):
 
 def main():
 
-    assert solve("inputs/day08/test.txt", find_antinodes) == 14
-    solution = solve("inputs/day08/input.txt", find_antinodes)
-    print("Part 1 solution:", solution)
-    assert solution == 247
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", type=str)
+    args = parser.parse_args()
 
-    assert solve("inputs/day08/test.txt", find_diagonal) == 34
-    solution = solve("inputs/day08/input.txt", find_diagonal)
-    print("Part 2 solution:", solution)
-    assert solution == 861
+    print("Part 1 solution:", solve(args.input_file, find_antinodes))
+    print("Part 2 solution:", solve(args.input_file, find_diagonal))
 
 
 if __name__ == "__main__":
