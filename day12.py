@@ -84,7 +84,6 @@ def solve(input_file, cost_func):
                 area = find_area(data, i, j)
                 result += cost_func(area) * len(area)
                 visited.update(area)
-                find_corners(area)
 
     return result
 
