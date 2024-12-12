@@ -1,4 +1,5 @@
 import argparse
+from itertools import product
 
 DIRECTIONS = ((1, 0), (-1, 0), (0, 1), (0, -1))
 CORNER_DIRECTIONS = ((1, 1), (1, -1), (-1, 1), (-1, -1))
@@ -13,16 +14,12 @@ def find_corners(area):
 
     corners = 0
 
-    for x, y in area:
-        for dx, dy in CORNER_DIRECTIONS:
-            if (x + dx, y) not in area and (x, y + dy) not in area:
-                corners += 1
-            elif (
-                (x + dx, y) in area
-                and (x, y + dy) in area
-                and (x + dx, y + dy) not in area
-            ):
-                corners += 1
+    for (x, y), (dx, dy) in product(area, CORNER_DIRECTIONS):
+        x1, y1 = x + dx, y + dy
+        if (x1, y) not in area and (x, y1) not in area:
+            corners += 1
+        elif (x1, y) in area and (x, y1) in area and (x1, y1) not in area:
+            corners += 1
 
     return corners
 
@@ -30,14 +27,10 @@ def find_corners(area):
 def find_perimeter(area):
 
     perimeter = 0
-    for x, y in area:
-        for dx, dy in DIRECTIONS:
-            if (
-                (x + dx, y) not in area
-                or (x, y + dy) not in area
-                or (x + dx, y + dy) not in area
-            ):
-                perimeter += 1
+    for (x, y), (dx, dy) in product(area, DIRECTIONS):
+        x1, y1 = x + dx, y + dy
+        if (x1, y) not in area or (x, y1) not in area or (x1, y1) not in area:
+            perimeter += 1
 
     return perimeter
 
@@ -58,13 +51,14 @@ def find_area(data, i, j):
         visited.add((x, y))
 
         for dx, dy in DIRECTIONS:
+            x1, y1 = x + dx, y + dy
             if (
-                0 <= x + dx < n_rows
-                and 0 <= y + dy < n_cols
-                and (x + dx, y + dy) not in visited
-                and data[x][y] == data[x + dx][y + dy]
+                0 <= x1 < n_rows
+                and 0 <= y1 < n_cols
+                and (x1, y1) not in visited
+                and data[x][y] == data[x1][y1]
             ):
-                queue.append((x + dx, y + dy))
+                queue.append((x1, y1))
 
     return visited
 
@@ -78,12 +72,11 @@ def solve(input_file, cost_func):
 
     result = 0
 
-    for i in range(n_rows):
-        for j in range(n_cols):
-            if ((i, j)) not in visited:
-                area = find_area(data, i, j)
-                result += cost_func(area) * len(area)
-                visited.update(area)
+    for i, j in product(range(n_rows), range(n_cols)):
+        if ((i, j)) not in visited:
+            area = find_area(data, i, j)
+            result += cost_func(area) * len(area)
+            visited.update(area)
 
     return result
 
