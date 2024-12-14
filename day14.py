@@ -130,7 +130,7 @@ def part2(input_file, width, height):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_file", type=str)
+    parser.add_argument("--input_file", type=str, required=True)
     parser.add_argument("--width", type=int, default=101, required=False)
     parser.add_argument("--height", type=int, default=103, required=False)
     args = parser.parse_args()
