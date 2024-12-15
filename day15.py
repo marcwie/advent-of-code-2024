@@ -42,25 +42,9 @@ def expand_map(robot, walls, boxes):
     return expanded_robot, expanded_walls, expanded_boxes, box_connection
 
 
-def move_horizontal(x, y, dy, boxes, walls):
+def move(x, y, dx, dy, boxes, box_connection, walls):
 
-    box_line = [(x, y + dy)]
-
-    while (box_line[-1][0], box_line[-1][1] + dy) in boxes:
-        box_line.append((box_line[-1][0], box_line[-1][1] + dy))
-
-    if (box_line[-1][0], box_line[-1][1] + dy) not in walls:
-        y = y + dy
-        box_indices = [boxes.index(box) for box in box_line]
-        for j, (box_x, box_y) in zip(box_indices, box_line):
-            boxes[j] = (box_x, box_y + dy)
-
-    return x, y, boxes
-
-
-def move_vertical(x, y, dx, boxes, box_connection, walls):
-
-    blocking_box = boxes.index((x + dx, y))
+    blocking_box = boxes.index((x + dx, y + dy))
     box_line = set((boxes[blocking_box], boxes[box_connection[blocking_box]]))
     n_boxes = 0
 
@@ -69,21 +53,21 @@ def move_vertical(x, y, dx, boxes, box_connection, walls):
 
         added_boxes = set()
         for box in box_line:
-            if (box[0] + dx, box[1]) in boxes:
-                blocking_box = boxes.index((box[0] + dx, box[1]))
+            if (box[0] + dx, box[1] + dy) in boxes:
+                blocking_box = boxes.index((box[0] + dx, box[1] + dy))
                 added_boxes.add(boxes[blocking_box])
                 added_boxes.add(boxes[box_connection[blocking_box]])
 
         box_line |= added_boxes
 
     for box in box_line:
-        if (box[0] + dx, box[1]) in walls:
+        if (box[0] + dx, box[1] + dy) in walls:
             return x, y, boxes
 
-    x = x + dx
+    x, y = x + dx, y + dy
     box_indices = [boxes.index(box) for box in box_line]
     for j, (box_x, box_y) in zip(box_indices, box_line):
-        boxes[j] = (box_x + dx, box_y)
+        boxes[j] = (box_x + dx, box_y + dy)
 
     return x, y, boxes
 
@@ -104,11 +88,8 @@ def solve(input_file, use_expanded_map=False):
         if (x + dx, y + dy) not in walls and (x + dx, y + dy) not in boxes:
             x, y = x + dx, y + dy
 
-        elif (x + dx, y + dy) in boxes and dy != 0:
-            x, y, boxes = move_horizontal(x, y, dy, boxes, walls)
-
-        elif (x + dx, y + dy) in boxes and dy == 0:
-            x, y, boxes = move_vertical(x, y, dx, boxes, box_connection, walls)
+        elif (x + dx, y + dy) in boxes:
+            x, y, boxes = move(x, y, dx, dy, boxes, box_connection, walls)
 
     if use_expanded_map:
         boxes = boxes[::2]
