@@ -34,23 +34,21 @@ def solve(input_file):
 
     x, y = robot
     for dx, dy in directions:
-        next_x = x + dx
-        next_y = y + dy
 
-        if (next_x, next_y) not in walls and (next_x, next_y) not in boxes:
-            x, y = next_x, next_y
+        if (x + dx, y + dy) not in walls and (x + dx, y + dy) not in boxes:
+            x, y = x + dx, y + dy
 
-        elif (next_x, next_y) in boxes:
-            box_line = [(next_x, next_y)]
+        elif (x + dx, y + dy) in boxes:
+            box_line = [(x + dx, y + dy)]
 
             while (box_line[-1][0] + dx, box_line[-1][1] + dy) in boxes:
                 box_line.append((box_line[-1][0] + dx, box_line[-1][1] + dy))
 
             if (box_line[-1][0] + dx, box_line[-1][1] + dy) not in walls:
+                x, y = x + dx, y + dy
                 box_indices = [boxes.index(box) for box in box_line]
                 for j, (box_x, box_y) in zip(box_indices, box_line):
                     boxes[j] = (box_x + dx, box_y + dy)
-                x, y = next_x, next_y
 
     return sum([100 * x + y for x, y in boxes])
 
