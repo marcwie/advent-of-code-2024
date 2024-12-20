@@ -13,7 +13,6 @@ def load(input_file):
                     path.add((i, j))
                 elif char == "S":
                     start = (i, j)
-                    path.add((i, j))
                 elif char == "E":
                     path.add((i, j))
                     end = (i, j)
@@ -25,34 +24,32 @@ def manhattan(p1, p2):
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
 
-def order_path(path, start, end):
+def ordered_path(input_file):
 
-    steps = 0
-    x, y = start
-    ordered_path = [(x, y, steps)]
-    seen = set()
-    seen.add(start)
+    path, (x, y), end = load(input_file)
+
+    path_ordered = [(x, y)]
 
     while (x, y) != end:
         for dx, dy in DIRECTIONS:
-            if (x + dx, y + dy) not in seen and (x + dx, y + dy) in path:
-                seen.add((x + dx, y + dy))
-                ordered_path.append((x + dx, y + dy, steps + 1))
+            if (x + dx, y + dy) in path:
+                path.remove((x + dx, y + dy))
+                path_ordered.append((x + dx, y + dy))
 
-        x, y, steps = ordered_path[-1]
+        x, y = path_ordered[-1]
 
-    return ordered_path
+    return path_ordered
 
 
 def solve(input_file, cheat_length, min_savings):
 
-    path, start, end = load(input_file)
-    ordered_path = order_path(path, start, end)
+    path = ordered_path(input_file)
+    path = [(x, y, steps) for steps, (x, y) in enumerate(path)]
 
     result = 0
 
-    for i, (x, y, steps) in enumerate(ordered_path):
-        later_points = ordered_path[i:]
+    for i, (x, y, steps) in enumerate(path):
+        later_points = path[i:]
         later_points = [p for p in later_points if manhattan(p, (x, y)) <= cheat_length]
         time_saved = [p[2] - steps - manhattan(p, (x, y)) for p in later_points]
         result += sum([ts >= min_savings for ts in time_saved])
