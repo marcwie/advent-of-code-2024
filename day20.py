@@ -1,5 +1,4 @@
 import argparse
-from collections import Counter
 
 DIRECTIONS = [(0, -1), (-1, 0), (0, 1), (1, 0)]
 
@@ -45,7 +44,7 @@ def order_path(path, start, end):
     return ordered_path
 
 
-def solve(input_file, cheat_len, min_savings):
+def solve(input_file, cheat_length, min_savings):
 
     path, start, end = load(input_file)
     ordered_path = order_path(path, start, end)
@@ -54,7 +53,7 @@ def solve(input_file, cheat_len, min_savings):
 
     for i, (x, y, steps) in enumerate(ordered_path):
         later_points = ordered_path[i:]
-        later_points = [p for p in later_points if manhattan(p, (x, y)) <= cheat_len]
+        later_points = [p for p in later_points if manhattan(p, (x, y)) <= cheat_length]
         time_saved = [p[2] - steps - manhattan(p, (x, y)) for p in later_points]
         result += sum([ts >= min_savings for ts in time_saved])
 
