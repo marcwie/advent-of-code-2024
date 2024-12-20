@@ -48,20 +48,17 @@ def order_path(path, start, end):
 def solve(input_file, cheat_len, min_savings):
 
     path, start, end = load(input_file)
-
     ordered_path = order_path(path, start, end)
-    time = {(x, y): steps for x, y, steps in ordered_path}
 
-    results = []
+    result = 0
 
-    for point in path:
-        later_points = [p for p in path if time[p] > time[point]]
-        later_points = [p for p in later_points if manhattan(p, point) <= cheat_len]
-        time_saved = [time[p] - time[point] - manhattan(p, point) for p in later_points]
-        time_saved = [ts for ts in time_saved if ts > 0]
-        results.extend(time_saved)
+    for i, (x, y, steps) in enumerate(ordered_path):
+        later_points = ordered_path[i:]
+        later_points = [p for p in later_points if manhattan(p, (x, y)) <= cheat_len]
+        time_saved = [p[2] - steps - manhattan(p, (x, y)) for p in later_points]
+        result += sum([ts >= min_savings for ts in time_saved])
 
-    return sum([result >= min_savings for result in results])
+    return result
 
 
 def main():
