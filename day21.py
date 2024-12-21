@@ -1,5 +1,7 @@
 import argparse
 from itertools import product
+from collections import Counter
+
 
 PAD = ["789", "456", "123", ".0A"]
 ROBOT_PAD = [".^A", "<v>"]
@@ -20,6 +22,13 @@ def buttons_coords(pad):
 
 def manhattan_distance(start, end):
     return abs(start[0] - end[0]) + abs(start[1] - end[1])
+
+
+def is_grouped(sequence):
+    for i in range(1, len(sequence)):
+        if sequence[i] != sequence[i - 1] and sequence[i] in sequence[:i]:
+            return False
+    return True
 
 
 def get_move_sequence(pad, start, end):
@@ -56,46 +65,45 @@ def get_all_move_sequences(pad):
 
 def get_required_moves(code):
 
-    moves = [("A", code[0])]
-    for i in range(1, len(code)):
-        moves.append((code[i - 1], code[i]))
+    moves = Counter(zip(code[:-1], code[1:]))
+    moves[("A", code[0])] += 1
 
     return moves
 
 
-def is_grouped(sequence):
-    for i in range(1, len(sequence)):
-        if sequence[i] != sequence[i - 1] and sequence[i] in sequence[:i]:
-            return False
-    return True
-
-
-def flatten_moves(moves):
-    return [move for move in product(*moves)]
-
-
-def filter_unique_sequences(moves):
-
-    sequences = []
-    for move in moves:
-        if sorted(move) not in sequences:
-            sequences.append(sorted(move))
-    return sequences
-
-
 def one_robot_run(robot_sequences, moves):
 
-    next_sequence = []
+    print("getting reuqired moves")
+    counter = get_required_moves(moves)
 
-    for move in moves:
-        moves = get_required_moves(move)
-        moves = [robot_sequences[move] for move in moves]
-        moves = flatten_moves(moves)
-        moves = filter_unique_sequences(moves)
-        moves = ["".join(move) for move in moves]
-        next_sequence.extend(moves)
+    print("getting robot moves")
+    moves = [robot_sequences[move] * count for move, count in counter.items()]
 
-    return next_sequence
+    print("flattening moves")
+    moves = "".join(moves)
+
+    return moves
+
+
+def get_best_robot_moves(robot_sequences):
+
+    for keys, value in robot_sequences.items():
+        if keys[0] == keys[1]:
+            robot_sequences[keys] = "A"
+        else:
+            robot_sequences[keys] = value[0]
+
+
+def get_best_keypad_moves(keypad_sequences, robot_sequences):
+
+    for key, value in keypad_sequences.items():
+        if len(value) > 1:
+            v1, v2 = value
+            p1 = one_robot_run(robot_sequences, one_robot_run(robot_sequences, v1))
+            p2 = one_robot_run(robot_sequences, one_robot_run(robot_sequences, v2))
+            keypad_sequences[key] = v1 if len(p1) <= len(p2) else v2
+        else:
+            keypad_sequences[key] = value[0] if value else ""
 
 
 def solve(input_file, n_robots):
@@ -105,24 +113,22 @@ def solve(input_file, n_robots):
     keypad_sequences = get_all_move_sequences(PAD)
     robot_sequences = get_all_move_sequences(ROBOT_PAD)
 
-    for keys in robot_sequences.keys():
-        if keys[0] == keys[1]:
-            robot_sequences[keys] = ["A"]
+    get_best_robot_moves(robot_sequences)
+    get_best_keypad_moves(keypad_sequences, robot_sequences)
 
     result = 0
 
     for code in data:
 
         moves = get_required_moves(code)
-        moves = [keypad_sequences[move] for move in moves]
-        moves = ["".join(move) for move in flatten_moves(moves)]
+        moves = [keypad_sequences[move] for move in moves.keys()]
+        moves = "".join(moves)
 
         for _ in range(n_robots):
+            print(code, _, len(moves))
             moves = one_robot_run(robot_sequences, moves)
 
-        moves = len(sorted(moves, key=len)[0])
-
-        result += moves * int(code[:-1])
+        result += len(moves) * int(code[:-1])
 
     return result
 
@@ -134,7 +140,7 @@ def main():
     args = parser.parse_args()
 
     print("Part 1 solution:", solve(args.input_file, n_robots=2))
-    # print("Part 2 solution:", solve(args.input_file, 20, 100))
+    # print("Part 2 solution:", solve(args.input_file, n_robots=25))
 
 
 if __name__ == "__main__":
