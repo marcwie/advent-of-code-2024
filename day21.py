@@ -73,16 +73,12 @@ def get_required_moves(code):
 
 def one_run(sequences, moves):
 
-    print("getting reuqired moves")
-    counter = get_required_moves(moves)
+    next_counter = Counter()
+    for move, count in moves.items():
+        for next_move, next_count in get_required_moves(sequences[move]).items():
+            next_counter[next_move] += count * next_count
 
-    print("getting robot moves")
-    moves = [sequences[move] * count for move, count in counter.items()]
-
-    print("flattening moves")
-    moves = "".join(moves)
-
-    return moves
+    return next_counter
 
 
 def get_best_robot_moves(robot_sequences):
@@ -90,17 +86,22 @@ def get_best_robot_moves(robot_sequences):
     for keys, value in robot_sequences.items():
         if keys[0] == keys[1]:
             robot_sequences[keys] = "A"
+        elif len(value) == 2:
+            robot_sequences[keys] = compare(*value)
         else:
             robot_sequences[keys] = value[0]
 
 
-def get_best_keypad_moves(keypad_sequences, robot_sequences):
+def compare(s1, s2):
+    preferences = ["<", "v", "^", ">"]
+    return s1 if preferences.index(s1[0]) < preferences.index(s2[0]) else s2
+
+
+def get_best_keypad_moves(keypad_sequences, robot_sequences, n_robots):
 
     for key, value in keypad_sequences.items():
         if len(value) > 1:
-            p1 = one_run(robot_sequences, one_run(robot_sequences, value[0]))
-            p2 = one_run(robot_sequences, one_run(robot_sequences, value[1]))
-            keypad_sequences[key] = value[0] if len(p1) <= len(p2) else value[1]
+            keypad_sequences[key] = compare(*value)
         else:
             keypad_sequences[key] = value[0] if value else ""
 
@@ -113,19 +114,19 @@ def solve(input_file, n_robots):
     robot_sequences = get_all_move_sequences(ROBOT_PAD)
 
     get_best_robot_moves(robot_sequences)
-    get_best_keypad_moves(keypad_sequences, robot_sequences)
+    get_best_keypad_moves(keypad_sequences, robot_sequences, n_robots)
 
     result = 0
 
     for code in data:
 
-        moves = one_run(keypad_sequences, code)
+        moves = get_required_moves(code)
+        moves = one_run(keypad_sequences, moves)
 
         for _ in range(n_robots):
-            print(code, _, len(moves))
             moves = one_run(robot_sequences, moves)
 
-        result += len(moves) * int(code[:-1])
+        result += sum(moves.values()) * int(code[:-1])
 
     return result
 
@@ -137,7 +138,7 @@ def main():
     args = parser.parse_args()
 
     print("Part 1 solution:", solve(args.input_file, n_robots=2))
-    # print("Part 2 solution:", solve(args.input_file, n_robots=25))
+    print("Part 2 solution:", solve(args.input_file, n_robots=25))
 
 
 if __name__ == "__main__":
