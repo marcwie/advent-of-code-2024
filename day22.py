@@ -27,19 +27,21 @@ def solve(input_file):
 
     for number in data:
 
-        # Part 1
+        # Compute sequence of numbers. Needed for both parts
         numbers = [number]
         for _ in range(N_NUMBERS - 1):
             numbers.append(next_number(numbers[-1]))
+
+        # Part 1
         sum_of_numbers += numbers[-1]
 
-        # Extension to part 2
+        # Part 2
         sales = Counter()
         numbers = [n % 10 for n in numbers]
         diff = [None] + [numbers[i] - numbers[i - 1] for i in range(1, N_NUMBERS)]
 
         for i in range(4, N_NUMBERS):
-            key = "".join(map(str, diff[i - 3 : i + 1]))
+            key = tuple(diff[i - 3 : i + 1])
             sales[key] = sales[key] or numbers[i]
 
         total_sales += sales
