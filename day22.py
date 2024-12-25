@@ -1,5 +1,4 @@
 import argparse
-from itertools import product
 from collections import Counter
 
 N_NUMBERS = 2000
@@ -29,7 +28,7 @@ def solve(input_file):
 
         # Compute sequence of numbers. Needed for both parts
         numbers = [number]
-        for _ in range(N_NUMBERS - 1):
+        for _ in range(N_NUMBERS):
             numbers.append(next_number(numbers[-1]))
 
         # Part 1
