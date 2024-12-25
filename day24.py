@@ -1,6 +1,4 @@
 import argparse
-from itertools import combinations
-from copy import copy
 
 
 def load(input_file):
