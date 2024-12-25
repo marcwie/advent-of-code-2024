@@ -80,12 +80,12 @@ def part2(input_file):
         for _op, _x0, _x1 in operations.values():
             if (
                 op == "AND"
+                and _op != "OR"
                 and "x00" not in [x0, x1]
                 and key in [_x0, _x1]
-                and _op != "OR"
             ):
                 swap_candidates.add(key)
-            elif op == "XOR" and key in [_x0, _x1] and _op == "OR":
+            elif op == "XOR" and _op == "OR" and key in [_x0, _x1]:
                 swap_candidates.add(key)
 
     return ",".join(sorted(swap_candidates))
