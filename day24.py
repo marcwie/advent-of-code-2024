@@ -63,30 +63,27 @@ def part2(input_file):
     vals, operations = load(input_file)
     largest_z = max([key for key in vals if key[0] == "z"])
 
+    values = operations.values()
+    or_operands = [x for op, *inp in values for x in inp if op == "OR"]
+    and_xor_operands = [x for op, *inp in values for x in inp if op != "OR"]
+
     swap_candidates = set()
-    for key, (op, x0, x1) in operations.items():
+    for wire, (op, x0, x1) in operations.items():
 
-        if key[0] == "z" and op != "XOR" and key != largest_z:
-            swap_candidates.add(key)
+        is_output = wire[0] == "z"
+        is_input = x0[0] in ["x", "y"] or x1[0] in ["x", "y"]
 
-        if (
-            op == "XOR"
-            and x0[0] not in ["x", "y"]
-            and x1[0] not in ["x", "y"]
-            and key[0] != "z"
-        ):
-            swap_candidates.add(key)
+        if is_output and op != "XOR" and wire != largest_z:
+            swap_candidates.add(wire)
 
-        for _op, _x0, _x1 in operations.values():
-            if (
-                op == "AND"
-                and _op != "OR"
-                and "x00" not in [x0, x1]
-                and key in [_x0, _x1]
-            ):
-                swap_candidates.add(key)
-            elif op == "XOR" and _op == "OR" and key in [_x0, _x1]:
-                swap_candidates.add(key)
+        if op == "XOR" and not is_input and not is_output:
+            swap_candidates.add(wire)
+
+        if op == "AND" and "x00" not in [x0, x1] and wire in and_xor_operands:
+            swap_candidates.add(wire)
+
+        if op == "XOR" and wire in or_operands:
+            swap_candidates.add(wire)
 
     return ",".join(sorted(swap_candidates))
 
