@@ -58,6 +58,39 @@ def part1(input_file):
     return extract_integer(vals, "z")
 
 
+def part2(input_file):
+
+    vals, operations = load(input_file)
+    largest_z = max([key for key in vals if key[0] == "z"])
+
+    swap_candidates = set()
+    for key, (op, x0, x1) in operations.items():
+
+        if key[0] == "z" and op != "XOR" and key != largest_z:
+            swap_candidates.add(key)
+
+        if (
+            op == "XOR"
+            and x0[0] not in ["x", "y"]
+            and x1[0] not in ["x", "y"]
+            and key[0] != "z"
+        ):
+            swap_candidates.add(key)
+
+        for _op, _x0, _x1 in operations.values():
+            if (
+                op == "AND"
+                and "x00" not in [x0, x1]
+                and key in [_x0, _x1]
+                and _op != "OR"
+            ):
+                swap_candidates.add(key)
+            elif op == "XOR" and key in [_x0, _x1] and _op == "OR":
+                swap_candidates.add(key)
+
+    return ",".join(sorted(swap_candidates))
+
+
 def main():
 
     parser = argparse.ArgumentParser()
@@ -65,6 +98,7 @@ def main():
     args = parser.parse_args()
 
     print("Part 1 solution:", part1(args.input_file))
+    print("Part 2 solution:", part2(args.input_file))
 
 
 if __name__ == "__main__":
