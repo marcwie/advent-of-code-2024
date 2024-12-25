@@ -67,23 +67,23 @@ def part2(input_file):
     or_operands = [x for op, *inp in values for x in inp if op == "OR"]
     and_xor_operands = [x for op, *inp in values for x in inp if op != "OR"]
 
-    swap_candidates = set()
+    swap_candidates = []
     for wire, (op, x0, x1) in operations.items():
 
         is_output = wire[0] == "z"
         is_input = x0[0] in ["x", "y"] or x1[0] in ["x", "y"]
 
         if is_output and op != "XOR" and wire != largest_z:
-            swap_candidates.add(wire)
+            swap_candidates.append(wire)
 
-        if op == "XOR" and not is_input and not is_output:
-            swap_candidates.add(wire)
+        elif op == "XOR" and not is_input and not is_output:
+            swap_candidates.append(wire)
 
-        if op == "AND" and "x00" not in [x0, x1] and wire in and_xor_operands:
-            swap_candidates.add(wire)
+        elif op == "AND" and "x00" not in [x0, x1] and wire in and_xor_operands:
+            swap_candidates.append(wire)
 
-        if op == "XOR" and wire in or_operands:
-            swap_candidates.add(wire)
+        elif op == "XOR" and wire in or_operands:
+            swap_candidates.append(wire)
 
     return ",".join(sorted(swap_candidates))
 
